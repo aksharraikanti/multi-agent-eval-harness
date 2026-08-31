@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "multi-agent-eval-harness"
+version = "0.1.0"
+description = "A multi-agent LLM eval harness, built from scratch to learn how scenario specs, trajectory scoring, handoff/context-loss detection, and LLM-judge calibration actually work."
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[tool.setuptools]
+packages = ["harness"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
