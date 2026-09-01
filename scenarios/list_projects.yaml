@@ -1,0 +1,8 @@
+id: list_projects
+role: project_agent
+input: "What projects do I have access to?"
+expected_tool_calls:
+  - list_projects
+success_criteria: >
+  The agent calls list_projects rather than answering from memory, and the
+  response mentions each project returned by the tool.

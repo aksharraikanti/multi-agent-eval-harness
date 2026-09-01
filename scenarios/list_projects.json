@@ -1,5 +1,0 @@
-{
-  "id": "list_projects",
-  "input": "What projects do I have access to?",
-  "expected_tool_calls": ["list_projects"]
-}

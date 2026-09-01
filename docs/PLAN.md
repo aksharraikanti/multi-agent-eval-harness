@@ -29,8 +29,8 @@ known ground truth before it's ever pointed at anything nondeterministic.
 1. **(done)** Repo scaffold, one deterministic mock agent, one scenario,
    a runner with a hardcoded check, PASS/FAIL output. The walking
    skeleton.
-2. Scenario spec schema v1 (pydantic: role, input, expected_tool_calls,
-   success_criteria) + YAML loader.
+2. **(done)** Scenario spec schema v1 (pydantic: role, input,
+   expected_tool_calls, success_criteria) + YAML loader.
 3. Second mock agent with an injected failure mode: drops a required tool
    call.
 4. Rule-based evaluator: tool-call-sequence matcher (exact/subset).

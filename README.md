@@ -12,11 +12,14 @@ truth before it's ever pointed at anything nondeterministic.
 Built one small, working increment at a time. See [`docs/PLAN.md`](docs/PLAN.md)
 for the full day-by-day build log.
 
-## Status: Day 1 — walking skeleton
+## Status: Day 2 — scenario schema + YAML loader
 
 - One deterministic mock agent (`harness/mock_agent.py`)
-- One scenario (`scenarios/list_projects.json`)
-- A runner that loads the scenario, runs the agent, checks its tool calls
+- A pydantic scenario schema (`harness/schema.py`) with handoff fields
+  already reserved (optional) for the multi-agent work later
+- Scenarios live as YAML (`scenarios/*.yaml`), loaded via
+  `harness/scenario_loader.py`
+- A runner that loads a scenario, runs the agent, checks its tool calls
   against what's expected, and prints PASS/FAIL (`harness/runner.py`)
 
 ```bash
