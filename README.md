@@ -12,15 +12,21 @@ truth before it's ever pointed at anything nondeterministic.
 Built one small, working increment at a time. See [`docs/PLAN.md`](docs/PLAN.md)
 for the full day-by-day build log.
 
-## Status: Day 5 — rule-based output-format evaluator
+## Status: Day 6 — runner CLI
 
+- `harness/cli.py`, installed as the `harness` command: `harness run
+  [paths...]` walks any mix of directories and scenario files (defaults
+  to `scenarios/`), runs each one against its registered agent
+  (`harness/agent_registry.py`), applies every evaluator, and prints a
+  report. Each scenario runs in its own try/except — an unregistered
+  role, an agent with no scripted response, or an evaluator bug is
+  caught and reported as a FAIL, not an aborted run
 - `harness/evaluators/output_format.py`: `OutputFormatEvaluator` checks
   an agent's textual output against two independent, opt-in checks —
   `expected_output_pattern` (regex) and `expected_output_schema` (a
   minimal JSON shape: top-level keys and their expected types). A
   scenario that sets neither trivially passes
-- `harness/evaluators/tool_call_sequence.py`: `ToolCallSequenceEvaluator`,
-  pulled out of the runner so it's reusable and independently testable.
+- `harness/evaluators/tool_call_sequence.py`: `ToolCallSequenceEvaluator`.
   `mode="exact"` requires the same calls in the same order; `mode="subset"`
   only requires the necessary calls to have happened, any order, extras
   allowed
@@ -31,15 +37,13 @@ for the full day-by-day build log.
   already reserved (optional) for the multi-agent work later
 - Scenarios live as YAML (`scenarios/*.yaml`), loaded via
   `harness/scenario_loader.py`
-- A runner that loads a scenario, runs the agent, evaluates it, and
-  prints PASS/FAIL (`harness/runner.py`)
-
-```bash
-python3 -m harness.runner
-```
 
 ```bash
 pip install -e ".[dev]"
+harness run
+```
+
+```bash
 pytest
 ```
 

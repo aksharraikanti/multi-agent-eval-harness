@@ -1,18 +1,20 @@
-"""Days 1-4: load a scenario, run one mock agent, evaluate its tool calls
-with the rule-based evaluator, print PASS/FAIL.
+"""The single-scenario primitive: run one scenario against one agent
+under one evaluator, print PASS/FAIL, return whether it passed.
 
-Still the smallest reasonable end-to-end slice. A real runner CLI that
-walks a whole directory and applies multiple pluggable evaluators lands
-day 6.
+This is what days 1-5 were built on and what most of the test suite
+still exercises directly, since it's the simplest unit to test failure
+modes against. The real, day-6 entry point for running the whole
+scenario suite is `harness.cli` (installed as the `harness` command) —
+it composes this same idea across every scenario and evaluator, with
+per-scenario crash isolation and an agent registry instead of one
+hardcoded agent.
 """
 
-import sys
 from pathlib import Path
 
 from harness.evaluators import ToolCallSequenceEvaluator
-from harness.mock_agent import AgentResult, CannedAgent
+from harness.mock_agent import CannedAgent
 from harness.schema import ScenarioSpec
-from harness.scenario_loader import load_scenario
 
 SCENARIOS_DIR = Path(__file__).resolve().parent.parent / "scenarios"
 
@@ -30,21 +32,3 @@ def run_scenario(scenario: ScenarioSpec, agent: CannedAgent, evaluator=DEFAULT_E
         print(f"    {outcome.reasoning}")
 
     return outcome.passed
-
-
-def main() -> int:
-    scenario = load_scenario(SCENARIOS_DIR / "list_projects.yaml")
-
-    agent = CannedAgent({
-        "What projects do I have access to?": AgentResult(
-            tool_calls=["list_projects"],
-            output="You have access to 2 projects: DEMO, TEST",
-        ),
-    })
-
-    passed = run_scenario(scenario, agent)
-    return 0 if passed else 1
-
-
-if __name__ == "__main__":
-    sys.exit(main())
