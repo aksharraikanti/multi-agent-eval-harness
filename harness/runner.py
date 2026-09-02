@@ -1,33 +1,35 @@
-"""Day 1-2: load scenarios (now via the pydantic schema + YAML loader),
-run one mock agent, check its tool calls against what's expected, print
-PASS/FAIL.
+"""Days 1-4: load a scenario, run one mock agent, evaluate its tool calls
+with the rule-based evaluator, print PASS/FAIL.
 
 Still the smallest reasonable end-to-end slice. A real runner CLI that
-walks a whole directory and applies pluggable evaluators lands day 6.
+walks a whole directory and applies multiple pluggable evaluators lands
+day 6.
 """
 
 import sys
 from pathlib import Path
 
+from harness.evaluators import ToolCallSequenceEvaluator
 from harness.mock_agent import AgentResult, CannedAgent
 from harness.schema import ScenarioSpec
 from harness.scenario_loader import load_scenario
 
 SCENARIOS_DIR = Path(__file__).resolve().parent.parent / "scenarios"
 
+DEFAULT_EVALUATOR = ToolCallSequenceEvaluator(mode="exact")
 
-def run_scenario(scenario: ScenarioSpec, agent: CannedAgent) -> bool:
+
+def run_scenario(scenario: ScenarioSpec, agent: CannedAgent, evaluator=DEFAULT_EVALUATOR) -> bool:
     """Run one scenario against one agent and return whether it passed."""
     result = agent.run(scenario.input)
-    passed = result.tool_calls == scenario.expected_tool_calls
+    outcome = evaluator.evaluate(scenario, result)
 
-    status = "PASS" if passed else "FAIL"
+    status = "PASS" if outcome.passed else "FAIL"
     print(f"[{status}] {scenario.id}")
-    if not passed:
-        print(f"    expected tool calls: {scenario.expected_tool_calls}")
-        print(f"    actual tool calls:   {result.tool_calls}")
+    if not outcome.passed:
+        print(f"    {outcome.reasoning}")
 
-    return passed
+    return outcome.passed
 
 
 def main() -> int:
