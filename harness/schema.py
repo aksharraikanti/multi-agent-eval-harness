@@ -21,6 +21,12 @@ class ScenarioSpec(BaseModel):
     expected_tool_calls: list[str] = Field(default_factory=list)
     success_criteria: str | None = None
 
+    # Output-format fields (day 5+). Both optional and independent: a
+    # scenario can check a free-text pattern, a JSON shape, both, or
+    # neither (in which case OutputFormatEvaluator trivially passes).
+    expected_output_pattern: str | None = None
+    expected_output_schema: dict[str, str] | None = None
+
     # Multi-agent handoff fields (day 8+). Optional: a single-agent
     # scenario simply omits them.
     handoff_to: str | None = None

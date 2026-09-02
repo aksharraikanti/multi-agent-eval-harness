@@ -35,7 +35,8 @@ known ground truth before it's ever pointed at anything nondeterministic.
    required tool call.
 4. **(done)** Rule-based evaluator: tool-call-sequence matcher
    (exact/subset).
-5. Rule-based evaluator: output-format validator (schema/regex).
+5. **(done)** Rule-based evaluator: output-format validator
+   (schema/regex).
 6. Runner CLI (`harness run scenarios/*.yaml`): loads scenarios, runs the
    mock agent, applies evaluators, prints a report table. Each scenario
    runs in its own try/except so one bad scenario can't kill the whole

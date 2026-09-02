@@ -12,8 +12,13 @@ truth before it's ever pointed at anything nondeterministic.
 Built one small, working increment at a time. See [`docs/PLAN.md`](docs/PLAN.md)
 for the full day-by-day build log.
 
-## Status: Day 4 — rule-based tool-call evaluator
+## Status: Day 5 — rule-based output-format evaluator
 
+- `harness/evaluators/output_format.py`: `OutputFormatEvaluator` checks
+  an agent's textual output against two independent, opt-in checks —
+  `expected_output_pattern` (regex) and `expected_output_schema` (a
+  minimal JSON shape: top-level keys and their expected types). A
+  scenario that sets neither trivially passes
 - `harness/evaluators/tool_call_sequence.py`: `ToolCallSequenceEvaluator`,
   pulled out of the runner so it's reusable and independently testable.
   `mode="exact"` requires the same calls in the same order; `mode="subset"`

@@ -7,3 +7,4 @@ expected_tool_calls:
 success_criteria: >
   The agent verifies the DEMO project exists via list_projects before
   calling create_ticket — it does not assume the project key is valid.
+expected_output_pattern: "DEMO-\\d+"
