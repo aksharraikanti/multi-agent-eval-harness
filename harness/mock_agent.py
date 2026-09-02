@@ -32,3 +32,24 @@ class CannedAgent:
         if input_text not in self._script:
             raise KeyError(f"CannedAgent has no scripted response for input: {input_text!r}")
         return self._script[input_text]
+
+
+class DropsToolCallAgent(CannedAgent):
+    """A CannedAgent that deterministically forgets one tool call.
+
+    Wraps a correct script and removes a specific tool call from every
+    response it returns — simulating an agent that skips a required step
+    in a multi-call sequence (e.g. creating a ticket without first
+    verifying the project exists). The underlying script stays correct so
+    a test can point at exactly one line — the wrapper — as the cause of
+    the failure, rather than a wrong scenario definition.
+    """
+
+    def __init__(self, script: dict[str, AgentResult], drop: str):
+        super().__init__(script)
+        self._drop = drop
+
+    def run(self, input_text: str) -> AgentResult:
+        result = super().run(input_text)
+        filtered_calls = [c for c in result.tool_calls if c != self._drop]
+        return AgentResult(tool_calls=filtered_calls, output=result.output)

@@ -12,9 +12,13 @@ truth before it's ever pointed at anything nondeterministic.
 Built one small, working increment at a time. See [`docs/PLAN.md`](docs/PLAN.md)
 for the full day-by-day build log.
 
-## Status: Day 2 — scenario schema + YAML loader
+## Status: Day 3 — a mock agent with an injected failure mode
 
-- One deterministic mock agent (`harness/mock_agent.py`)
+- A deterministic mock agent (`harness/mock_agent.py`: `CannedAgent`) and
+  a second one that wraps any script and deterministically drops one
+  required tool call (`DropsToolCallAgent`) — the first proof that the
+  runner actually catches a realistic failure, not just a hand-picked
+  wrong scenario
 - A pydantic scenario schema (`harness/schema.py`) with handoff fields
   already reserved (optional) for the multi-agent work later
 - Scenarios live as YAML (`scenarios/*.yaml`), loaded via

@@ -31,8 +31,8 @@ known ground truth before it's ever pointed at anything nondeterministic.
    skeleton.
 2. **(done)** Scenario spec schema v1 (pydantic: role, input,
    expected_tool_calls, success_criteria) + YAML loader.
-3. Second mock agent with an injected failure mode: drops a required tool
-   call.
+3. **(done)** Second mock agent with an injected failure mode: drops a
+   required tool call.
 4. Rule-based evaluator: tool-call-sequence matcher (exact/subset).
 5. Rule-based evaluator: output-format validator (schema/regex).
 6. Runner CLI (`harness run scenarios/*.yaml`): loads scenarios, runs the
