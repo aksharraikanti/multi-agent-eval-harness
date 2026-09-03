@@ -12,8 +12,15 @@ truth before it's ever pointed at anything nondeterministic.
 Built one small, working increment at a time. See [`docs/PLAN.md`](docs/PLAN.md)
 for the full day-by-day build log.
 
-## Status: Day 11 — timeout handling
+## Status: Day 12 — mock tool server v1
 
+- `harness/mock_tool_server.py`: `MockToolServer`, a small local HTTP
+  server (stdlib `http.server`, no new dependency) with deterministic,
+  pre-scripted responses keyed by `(method, path)` — a stand-in for a
+  real external API so a scenario can exercise a genuine HTTP call
+  without network access or a live account. An unscripted request gets
+  a 404 with a JSON error body, the HTTP equivalent of `CannedAgent`'s
+  `KeyError`. Not wired into any agent yet — that's day 13
 - A fourth mock agent, `TimesOutAgent`: with `partial_after=None` (the
   default) it raises `AgentTimeoutError` instead of returning anything —
   a total timeout. With `partial_after=N` it returns a result truncated
