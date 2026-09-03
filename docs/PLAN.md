@@ -55,8 +55,8 @@ known ground truth before it's ever pointed at anything nondeterministic.
     add timeout handling to the runner.
 12. **(done)** Mock tool server v1: a small local HTTP server standing
     in for one fake external API, deterministic canned responses.
-13. Wire a mock agent to call the mock tool server instead of a
-    hardcoded stub — first fully "live" (locally) run.
+13. **(done)** Wire a mock agent to call the mock tool server instead of
+    a hardcoded stub — first fully "live" (locally) run.
 14. Second mock tool server + second agent using it, to prove the
     pattern generalizes.
 15. Reproducibility pass: log every run's inputs and every agent/tool-

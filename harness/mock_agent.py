@@ -6,6 +6,8 @@ mock agents stay deterministic by construction so the harness's own tests
 never flake.
 """
 
+import json
+import urllib.request
 from dataclasses import dataclass, field
 
 
@@ -185,3 +187,38 @@ class TimesOutAgent(CannedAgent):
             output="",
             handoff_context=None,
         )
+
+
+class HttpAgent:
+    """An agent whose response comes from a real HTTP call to a mock
+    tool server (day 12), instead of a hardcoded Python dict — the first
+    agent in this project that's genuinely "live" in the sense an eval
+    harness cares about: a real request goes out over a real socket and
+    a real response comes back, even though the server on the other end
+    is still fully deterministic and local. Doesn't subclass CannedAgent
+    (there's no canned AgentResult to look up) — it only needs to match
+    the same run(input_text) -> AgentResult shape every other agent here
+    uses.
+
+    script maps input_text -> (tool_call_name, method, path). A
+    non-2xx response or a connection failure raises (HTTPError /
+    URLError) rather than being caught here — the CLI's existing
+    crash-isolation already knows what to do with an exception from
+    agent.run(), so there's no reason to invent a second error channel.
+    """
+
+    def __init__(self, base_url: str, script: dict[str, tuple[str, str, str]]):
+        self._base_url = base_url
+        self._script = script
+
+    def run(self, input_text: str) -> AgentResult:
+        if input_text not in self._script:
+            raise KeyError(f"HttpAgent has no scripted request for input: {input_text!r}")
+
+        tool_call_name, method, path = self._script[input_text]
+
+        request = urllib.request.Request(self._base_url + path, method=method)
+        with urllib.request.urlopen(request) as response:
+            body = json.loads(response.read())
+
+        return AgentResult(tool_calls=[tool_call_name], output=json.dumps(body))

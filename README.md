@@ -12,8 +12,18 @@ truth before it's ever pointed at anything nondeterministic.
 Built one small, working increment at a time. See [`docs/PLAN.md`](docs/PLAN.md)
 for the full day-by-day build log.
 
-## Status: Day 12 — mock tool server v1
+## Status: Day 13 — first live agent (real HTTP, still fully local)
 
+- `HttpAgent` (`harness/mock_agent.py`): the first agent whose
+  `AgentResult` comes from an actual HTTP round-trip to a
+  `MockToolServer` instead of a dict lookup. A non-2xx response or a
+  dead server propagates as a real exception rather than being
+  swallowed — the CLI's existing crash-isolation (day 6) and the
+  `agent=` override (day 11) already know what to do with it, so no new
+  machinery was needed to run it through the real `evaluate_scenario`
+  path end to end. Not in the default registry yet — this is a
+  demonstration that the pipeline works against something live, not a
+  registry-wide switch
 - `harness/mock_tool_server.py`: `MockToolServer`, a small local HTTP
   server (stdlib `http.server`, no new dependency) with deterministic,
   pre-scripted responses keyed by `(method, path)` — a stand-in for a
