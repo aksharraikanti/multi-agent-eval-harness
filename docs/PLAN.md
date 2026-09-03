@@ -57,8 +57,8 @@ known ground truth before it's ever pointed at anything nondeterministic.
     in for one fake external API, deterministic canned responses.
 13. **(done)** Wire a mock agent to call the mock tool server instead of
     a hardcoded stub — first fully "live" (locally) run.
-14. Second mock tool server + second agent using it, to prove the
-    pattern generalizes.
+14. **(done)** Second mock tool server + second agent using it, to
+    prove the pattern generalizes.
 15. Reproducibility pass: log every run's inputs and every agent/tool-
     server output to JSON, keyed by run id. "Replay" means re-running
     the evaluators against a logged run's outputs without re-invoking

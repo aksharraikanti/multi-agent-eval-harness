@@ -12,8 +12,15 @@ truth before it's ever pointed at anything nondeterministic.
 Built one small, working increment at a time. See [`docs/PLAN.md`](docs/PLAN.md)
 for the full day-by-day build log.
 
-## Status: Day 13 — first live agent (real HTTP, still fully local)
+## Status: Day 14 — proving the live pattern generalizes
 
+- A second `MockToolServer`/`HttpAgent` pair, backing a completely
+  different fake API (ticket lookup instead of doc search), using zero
+  new code — same two classes from days 12-13. Tests run both pairs
+  simultaneously on independently OS-assigned ports and confirm they
+  don't interfere, plus a negative test (pointing the wrong agent's
+  script at the wrong server) to confirm a mismatch fails cleanly
+  instead of silently passing
 - `HttpAgent` (`harness/mock_agent.py`): the first agent whose
   `AgentResult` comes from an actual HTTP round-trip to a
   `MockToolServer` instead of a dict lookup. A non-2xx response or a
