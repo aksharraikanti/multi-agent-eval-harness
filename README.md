@@ -12,15 +12,20 @@ truth before it's ever pointed at anything nondeterministic.
 Built one small, working increment at a time. See [`docs/PLAN.md`](docs/PLAN.md)
 for the full day-by-day build log.
 
-## Status: Day 9 — context-loss detector v1
+## Status: Day 10 — context-loss detector v2 (hallucinated keys)
 
+- `ContextLossEvaluator` gains `check_hallucinated_keys` (opt-in, like
+  `ToolCallSequenceEvaluator`'s modes): on top of v1's missing/mismatched
+  check, it flags any handoff-context key that was never part of
+  `context_passed` — an orchestrator inventing information rather than
+  losing it. `HallucinatesContextKeyAgent` simulates that. Wired into
+  the CLI's default evaluator set (`check_hallucinated_keys=True`),
+  since the CLI's whole point is applying every evaluator
 - `harness/evaluators/context_loss.py`: `ContextLossEvaluator` diffs a
   scenario's `context_passed` (ground truth) against the orchestrator's
   actual `AgentResult.handoff_context`, flagging keys that are missing
-  or have the wrong value. It deliberately ignores extra keys the
-  orchestrator over-shares — that's day 10's hallucinated-key check.
-  `DropsContextKeyAgent` simulates a real dropped-context failure to run
-  it against
+  or have the wrong value. `DropsContextKeyAgent` simulates a real
+  dropped-context failure to run it against
 - `AgentResult` gains an optional `handoff_context` field — what an
   orchestrator actually hands off to a worker agent. `ScenarioSpec`'s
   `handoff_to`/`context_passed` fields (reserved since day 2) get their

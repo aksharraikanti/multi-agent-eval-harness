@@ -14,12 +14,16 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from harness.agent_registry import get_agent
-from harness.evaluators import OutputFormatEvaluator, ToolCallSequenceEvaluator
+from harness.evaluators import ContextLossEvaluator, OutputFormatEvaluator, ToolCallSequenceEvaluator
 from harness.runner import SCENARIOS_DIR
 from harness.scenario_loader import load_scenario, load_scenarios
 from harness.schema import ScenarioSpec
 
-DEFAULT_EVALUATORS = (ToolCallSequenceEvaluator(mode="exact"), OutputFormatEvaluator())
+DEFAULT_EVALUATORS = (
+    ToolCallSequenceEvaluator(mode="exact"),
+    OutputFormatEvaluator(),
+    ContextLossEvaluator(check_hallucinated_keys=True),
+)
 
 
 @dataclass(frozen=True)

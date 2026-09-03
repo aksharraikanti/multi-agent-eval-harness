@@ -49,8 +49,8 @@ known ground truth before it's ever pointed at anything nondeterministic.
    no migration.
 9. **(done)** Context-loss detector v1: diff the context dict passed
    agent→agent, flag missing keys.
-10. Context-loss detector v2: flag hallucinated keys present on the
-    receiving side but never passed.
+10. **(done)** Context-loss detector v2: flag hallucinated keys present
+    on the receiving side but never passed.
 11. Fourth mock agent that times out / partially completes; add timeout
     handling to the runner.
 12. Mock tool server v1: a small local HTTP server standing in for one

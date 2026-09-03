@@ -114,3 +114,31 @@ class DropsContextKeyAgent(CannedAgent):
             output=result.output,
             handoff_context=filtered_context,
         )
+
+
+class HallucinatesContextKeyAgent(CannedAgent):
+    """A CannedAgent that deterministically invents one extra handoff-
+    context key.
+
+    Wraps a correct script and adds a key/value pair to handoff_context
+    that was never part of the scripted response — simulating an
+    orchestrator that fabricates information rather than losing it (e.g.
+    inventing a due_date nobody asked for). tool_calls and output are
+    untouched; if the wrapped script has no handoff_context at all, one
+    is created containing only the invented key.
+    """
+
+    def __init__(self, script: dict[str, AgentResult], key: str, value):
+        super().__init__(script)
+        self._key = key
+        self._value = value
+
+    def run(self, input_text: str) -> AgentResult:
+        result = super().run(input_text)
+        context = dict(result.handoff_context or {})
+        context[self._key] = self._value
+        return AgentResult(
+            tool_calls=result.tool_calls,
+            output=result.output,
+            handoff_context=context,
+        )
