@@ -47,8 +47,8 @@ known ground truth before it's ever pointed at anything nondeterministic.
 8. **(done)** Two-agent handoff scenario spec: add `handoff_to` +
    `context_passed` as optional fields — existing scenarios stay valid,
    no migration.
-9. Context-loss detector v1: diff the context dict passed agent→agent,
-   flag missing keys.
+9. **(done)** Context-loss detector v1: diff the context dict passed
+   agent→agent, flag missing keys.
 10. Context-loss detector v2: flag hallucinated keys present on the
     receiving side but never passed.
 11. Fourth mock agent that times out / partially completes; add timeout

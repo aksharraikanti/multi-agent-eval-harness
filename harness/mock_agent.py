@@ -58,7 +58,11 @@ class DropsToolCallAgent(CannedAgent):
     def run(self, input_text: str) -> AgentResult:
         result = super().run(input_text)
         filtered_calls = [c for c in result.tool_calls if c != self._drop]
-        return AgentResult(tool_calls=filtered_calls, output=result.output)
+        return AgentResult(
+            tool_calls=filtered_calls,
+            output=result.output,
+            handoff_context=result.handoff_context,
+        )
 
 
 class HallucinatesToolCallAgent(CannedAgent):
@@ -78,4 +82,35 @@ class HallucinatesToolCallAgent(CannedAgent):
 
     def run(self, input_text: str) -> AgentResult:
         result = super().run(input_text)
-        return AgentResult(tool_calls=[*result.tool_calls, self._hallucinate], output=result.output)
+        return AgentResult(
+            tool_calls=[*result.tool_calls, self._hallucinate],
+            output=result.output,
+            handoff_context=result.handoff_context,
+        )
+
+
+class DropsContextKeyAgent(CannedAgent):
+    """A CannedAgent that deterministically drops one key from its
+    handoff context.
+
+    Wraps a correct script and removes a specific key from
+    handoff_context on every response — simulating an orchestrator that
+    silently loses a piece of information on the way to a worker agent
+    (e.g. forgetting to pass the reporter's email). The underlying
+    script's tool_calls and output are untouched.
+    """
+
+    def __init__(self, script: dict[str, AgentResult], drop_key: str):
+        super().__init__(script)
+        self._drop_key = drop_key
+
+    def run(self, input_text: str) -> AgentResult:
+        result = super().run(input_text)
+        if result.handoff_context is None:
+            return result
+        filtered_context = {k: v for k, v in result.handoff_context.items() if k != self._drop_key}
+        return AgentResult(
+            tool_calls=result.tool_calls,
+            output=result.output,
+            handoff_context=filtered_context,
+        )
