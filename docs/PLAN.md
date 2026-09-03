@@ -44,8 +44,9 @@ known ground truth before it's ever pointed at anything nondeterministic.
 7. **(done)** Third mock agent that hallucinates a tool call outside its
    allowed set; add a hallucination-detection mode to the day-4 matcher
    (same evaluator, not a new class).
-8. Two-agent handoff scenario spec: add `handoff_to` + `context_passed`
-   as optional fields — existing scenarios stay valid, no migration.
+8. **(done)** Two-agent handoff scenario spec: add `handoff_to` +
+   `context_passed` as optional fields — existing scenarios stay valid,
+   no migration.
 9. Context-loss detector v1: diff the context dict passed agent→agent,
    flag missing keys.
 10. Context-loss detector v2: flag hallucinated keys present on the

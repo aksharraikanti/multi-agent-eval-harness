@@ -34,7 +34,12 @@ class ScenarioSpec(BaseModel):
     expected_output_pattern: str | None = None
     expected_output_schema: dict[str, str] | None = None
 
-    # Multi-agent handoff fields (day 8+). Optional: a single-agent
-    # scenario simply omits them.
+    # Multi-agent handoff fields. Reserved (optional, unused) since day 2
+    # so this schema never needed a migration; day 8 is when a scenario
+    # first actually sets them. handoff_to names the worker agent the
+    # role in `role` is expected to hand off to; context_passed is the
+    # ground truth for what that handoff should contain — days 9-10's
+    # context-loss detector diffs it against the orchestrator's actual
+    # AgentResult.handoff_context. A single-agent scenario omits both.
     handoff_to: str | None = None
     context_passed: dict | None = None

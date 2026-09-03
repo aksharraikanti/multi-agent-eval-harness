@@ -12,8 +12,14 @@ truth before it's ever pointed at anything nondeterministic.
 Built one small, working increment at a time. See [`docs/PLAN.md`](docs/PLAN.md)
 for the full day-by-day build log.
 
-## Status: Day 7 — hallucination detection
+## Status: Day 8 — two-agent handoff scenario spec
 
+- `AgentResult` gains an optional `handoff_context` field — what an
+  orchestrator actually hands off to a worker agent. `ScenarioSpec`'s
+  `handoff_to`/`context_passed` fields (reserved since day 2) get their
+  first real use: `scenarios/handoff_create_ticket.yaml` plus a
+  registered `orchestrator` mock agent whose `handoff_context` matches
+  what the scenario expects. No detector yet — days 9-10 diff the two
 - `ToolCallSequenceEvaluator` gains `mode="hallucination"`: every actual
   tool call must appear in the scenario's allow-list
   (`allowed_tool_calls`, defaulting to `expected_tool_calls` when unset).

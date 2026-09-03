@@ -14,6 +14,12 @@ class AgentResult:
     tool_calls: list[str] = field(default_factory=list)
     output: str = ""
 
+    # The context an orchestrator actually hands off to a worker agent
+    # (day 8+). None for single-agent scenarios. Days 9-10's context-loss
+    # detector diffs this observed value against the scenario's
+    # context_passed (what should have been handed off).
+    handoff_context: dict | None = None
+
 
 class CannedAgent:
     """Returns a fixed, pre-scripted tool-call sequence for one known input.

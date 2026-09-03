@@ -1,0 +1,14 @@
+id: handoff_create_ticket
+role: orchestrator
+input: "Create a ticket in the DEMO project titled 'Fix login bug' and notify the reporter"
+expected_tool_calls:
+  - parse_request
+handoff_to: ticket_agent
+context_passed:
+  project_key: DEMO
+  title: "Fix login bug"
+  reporter_email: user@example.com
+success_criteria: >
+  The orchestrator correctly parses the request and hands off complete,
+  accurate context to ticket_agent — nothing required for ticket
+  creation should be missing, wrong, or invented.

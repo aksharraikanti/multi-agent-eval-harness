@@ -29,6 +29,17 @@ DEFAULT_AGENTS: dict[str, CannedAgent] = {
             output="Found 3 pages about the login flow.",
         ),
     }),
+    "orchestrator": CannedAgent({
+        "Create a ticket in the DEMO project titled 'Fix login bug' and notify the reporter": AgentResult(
+            tool_calls=["parse_request"],
+            output="Handing off to ticket_agent.",
+            handoff_context={
+                "project_key": "DEMO",
+                "title": "Fix login bug",
+                "reporter_email": "user@example.com",
+            },
+        ),
+    }),
 }
 
 
