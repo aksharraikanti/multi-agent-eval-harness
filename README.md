@@ -12,8 +12,16 @@ truth before it's ever pointed at anything nondeterministic.
 Built one small, working increment at a time. See [`docs/PLAN.md`](docs/PLAN.md)
 for the full day-by-day build log.
 
-## Status: Day 6 — runner CLI
+## Status: Day 7 — hallucination detection
 
+- `ToolCallSequenceEvaluator` gains `mode="hallucination"`: every actual
+  tool call must appear in the scenario's allow-list
+  (`allowed_tool_calls`, defaulting to `expected_tool_calls` when unset).
+  It's a separate mode from `subset` on purpose — `subset` explicitly
+  tolerates extra calls, so it alone would never catch an unauthorized
+  one (e.g. a `delete_ticket` call slipped into a read-only search)
+- A third mock agent, `HallucinatesToolCallAgent`, wraps a correct script
+  and deterministically appends one tool call that was never scripted
 - `harness/cli.py`, installed as the `harness` command: `harness run
   [paths...]` walks any mix of directories and scenario files (defaults
   to `scenarios/`), runs each one against its registered agent
@@ -26,13 +34,9 @@ for the full day-by-day build log.
   `expected_output_pattern` (regex) and `expected_output_schema` (a
   minimal JSON shape: top-level keys and their expected types). A
   scenario that sets neither trivially passes
-- `harness/evaluators/tool_call_sequence.py`: `ToolCallSequenceEvaluator`.
-  `mode="exact"` requires the same calls in the same order; `mode="subset"`
-  only requires the necessary calls to have happened, any order, extras
-  allowed
 - A deterministic mock agent (`harness/mock_agent.py`: `CannedAgent`) and
-  a second one that wraps any script and deterministically drops one
-  required tool call (`DropsToolCallAgent`)
+  one that wraps any script and deterministically drops one required
+  tool call (`DropsToolCallAgent`)
 - A pydantic scenario schema (`harness/schema.py`) with handoff fields
   already reserved (optional) for the multi-agent work later
 - Scenarios live as YAML (`scenarios/*.yaml`), loaded via

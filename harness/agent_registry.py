@@ -23,6 +23,12 @@ DEFAULT_AGENTS: dict[str, CannedAgent] = {
             output="Created DEMO-42.",
         ),
     }),
+    "search_agent": CannedAgent({
+        "Find documentation about the login flow": AgentResult(
+            tool_calls=["search_docs"],
+            output="Found 3 pages about the login flow.",
+        ),
+    }),
 }
 
 

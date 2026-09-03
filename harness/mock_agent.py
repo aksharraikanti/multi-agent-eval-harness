@@ -53,3 +53,23 @@ class DropsToolCallAgent(CannedAgent):
         result = super().run(input_text)
         filtered_calls = [c for c in result.tool_calls if c != self._drop]
         return AgentResult(tool_calls=filtered_calls, output=result.output)
+
+
+class HallucinatesToolCallAgent(CannedAgent):
+    """A CannedAgent that deterministically invents one extra tool call.
+
+    Wraps a correct script and appends a tool call that was never part of
+    the scripted response — simulating an agent that takes an action it
+    was never supposed to (e.g. calling delete_ticket while answering a
+    read-only search question). Like DropsToolCallAgent, the underlying
+    script stays correct so the wrapper is unambiguously the cause of the
+    failure.
+    """
+
+    def __init__(self, script: dict[str, AgentResult], hallucinate: str):
+        super().__init__(script)
+        self._hallucinate = hallucinate
+
+    def run(self, input_text: str) -> AgentResult:
+        result = super().run(input_text)
+        return AgentResult(tool_calls=[*result.tool_calls, self._hallucinate], output=result.output)

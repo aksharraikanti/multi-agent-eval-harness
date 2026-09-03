@@ -41,9 +41,9 @@ known ground truth before it's ever pointed at anything nondeterministic.
    scenarios, runs the mock agent, applies evaluators, prints a report
    table. Each scenario runs in its own try/except so one bad scenario
    can't kill the whole suite.
-7. Third mock agent that hallucinates a tool call outside its allowed
-   set; add a hallucination-detection mode to the day-4 matcher (same
-   evaluator, not a new class).
+7. **(done)** Third mock agent that hallucinates a tool call outside its
+   allowed set; add a hallucination-detection mode to the day-4 matcher
+   (same evaluator, not a new class).
 8. Two-agent handoff scenario spec: add `handoff_to` + `context_passed`
    as optional fields — existing scenarios stay valid, no migration.
 9. Context-loss detector v1: diff the context dict passed agent→agent,

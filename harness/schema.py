@@ -21,6 +21,13 @@ class ScenarioSpec(BaseModel):
     expected_tool_calls: list[str] = Field(default_factory=list)
     success_criteria: str | None = None
 
+    # The full set of tool calls this scenario permits (day 7+). Optional:
+    # when omitted, the allow-list defaults to expected_tool_calls, so an
+    # existing scenario that never mentions this field still implicitly
+    # forbids any call it didn't ask for. Set it explicitly to widen the
+    # allow-list beyond what's strictly expected.
+    allowed_tool_calls: list[str] | None = None
+
     # Output-format fields (day 5+). Both optional and independent: a
     # scenario can check a free-text pattern, a JSON shape, both, or
     # neither (in which case OutputFormatEvaluator trivially passes).

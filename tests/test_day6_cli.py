@@ -95,7 +95,7 @@ def test_print_report_shows_pass_fail_and_a_summary_line(capsys):
     output = capsys.readouterr().out
     assert "[PASS] list_projects" in output
     assert "[PASS] create_ticket" in output
-    assert "2/2 scenarios passed" in output
+    assert "3/3 scenarios passed" in output
 
 
 # --- main() CLI entry point -------------------------------------------------
@@ -111,7 +111,7 @@ def test_main_run_with_no_paths_defaults_to_scenarios_dir(capsys):
     exit_code = main(["run"])
 
     assert exit_code == 0
-    assert "2/2 scenarios passed" in capsys.readouterr().out
+    assert "3/3 scenarios passed" in capsys.readouterr().out
 
 
 def test_main_run_with_explicit_bad_scenario_returns_nonzero(capsys, tmp_path):
