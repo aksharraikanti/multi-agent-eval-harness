@@ -142,3 +142,46 @@ class HallucinatesContextKeyAgent(CannedAgent):
             output=result.output,
             handoff_context=context,
         )
+
+
+class AgentTimeoutError(Exception):
+    """Raised by a mock agent that times out before producing any result."""
+
+
+class TimesOutAgent(CannedAgent):
+    """A CannedAgent that simulates hitting a timeout.
+
+    With partial_after=None (the default), the agent times out
+    completely: run() raises AgentTimeoutError instead of returning
+    anything — simulating an agent that never came back at all. The
+    runner needs an explicit try/except for this, since it's the only
+    mock-agent failure mode so far that doesn't produce an AgentResult
+    an evaluator could even look at.
+
+    With partial_after=N, the agent instead returns a result truncated to
+    the first N tool calls, empty output, and no handoff context —
+    simulating a timeout that cut the agent off mid-execution rather than
+    before it started. This needs no special runner handling: a
+    truncated tool-call list is just a normal AgentResult that
+    ToolCallSequenceEvaluator already knows how to fail.
+
+    Deterministic like every other mock agent here — no real sleeping,
+    no randomness. The same input always produces the same (lack of)
+    result.
+    """
+
+    def __init__(self, script: dict[str, AgentResult], partial_after: int | None = None):
+        super().__init__(script)
+        self._partial_after = partial_after
+
+    def run(self, input_text: str) -> AgentResult:
+        result = super().run(input_text)
+
+        if self._partial_after is None:
+            raise AgentTimeoutError(f"agent timed out running input: {input_text!r}")
+
+        return AgentResult(
+            tool_calls=result.tool_calls[: self._partial_after],
+            output="",
+            handoff_context=None,
+        )

@@ -12,8 +12,21 @@ truth before it's ever pointed at anything nondeterministic.
 Built one small, working increment at a time. See [`docs/PLAN.md`](docs/PLAN.md)
 for the full day-by-day build log.
 
-## Status: Day 10 — context-loss detector v2 (hallucinated keys)
+## Status: Day 11 — timeout handling
 
+- A fourth mock agent, `TimesOutAgent`: with `partial_after=None` (the
+  default) it raises `AgentTimeoutError` instead of returning anything —
+  a total timeout. With `partial_after=N` it returns a result truncated
+  to the first N tool calls — a timeout that cut the agent off
+  mid-execution, which needs no special handling since
+  `ToolCallSequenceEvaluator` already fails a short call list
+- `harness/cli.py`'s `evaluate_scenario` catches `AgentTimeoutError`
+  distinctly from a generic crash — `ScenarioOutcome.timed_out` and a
+  `[TIMEOUT]` report status, since a timeout is a meaningful outcome an
+  eval harness needs to surface clearly, not a bug in the harness
+  itself. It also now accepts an explicit `agent=` override so tests can
+  exercise a failure-mode agent through the real evaluate_scenario path
+  without polluting the "always passes" registry
 - `ContextLossEvaluator` gains `check_hallucinated_keys` (opt-in, like
   `ToolCallSequenceEvaluator`'s modes): on top of v1's missing/mismatched
   check, it flags any handoff-context key that was never part of
