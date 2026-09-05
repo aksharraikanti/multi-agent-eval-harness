@@ -59,10 +59,10 @@ known ground truth before it's ever pointed at anything nondeterministic.
     a hardcoded stub — first fully "live" (locally) run.
 14. **(done)** Second mock tool server + second agent using it, to
     prove the pattern generalizes.
-15. Reproducibility pass: log every run's inputs and every agent/tool-
-    server output to JSON, keyed by run id. "Replay" means re-running
-    the evaluators against a logged run's outputs without re-invoking
-    the agent or tool server.
+15. **(done)** Reproducibility pass: log every run's inputs and every
+    agent/tool-server output to JSON, keyed by run id. "Replay" means
+    re-running the evaluators against a logged run's outputs without
+    re-invoking the agent or tool server.
 16. LLM-judge scorer v1: wire a real Claude/OpenAI call to grade one
     open-ended scenario against a rubric.
 17. Judge calibration: hand-label 10-15 scenario outputs, compare judge

@@ -12,8 +12,18 @@ truth before it's ever pointed at anything nondeterministic.
 Built one small, working increment at a time. See [`docs/PLAN.md`](docs/PLAN.md)
 for the full day-by-day build log.
 
-## Status: Day 14 — proving the live pattern generalizes
+## Status: Day 15 — reproducibility: record and replay a run
 
+- `harness/run_log.py`: `record_run()` captures a scenario + its
+  `AgentResult` as a JSON-serializable `RunRecord`; `write_run_log()` /
+  `load_run_log()` round-trip it to/from disk; `replay()` re-runs
+  evaluators against a logged run without invoking the agent or any
+  tool server again. That guarantee is structural, not a runtime
+  check — `replay(record, evaluators)` has no agent parameter, so
+  there's nothing in it that could make a network call even by
+  accident. Useful for iterating on evaluator logic against a fixed,
+  known trace instead of re-running (possibly costly, network-bound,
+  or nondeterministic) agents every time
 - A second `MockToolServer`/`HttpAgent` pair, backing a completely
   different fake API (ticket lookup instead of doc search), using zero
   new code — same two classes from days 12-13. Tests run both pairs
