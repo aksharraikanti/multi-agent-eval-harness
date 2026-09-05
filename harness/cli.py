@@ -46,6 +46,11 @@ class ScenarioOutcome:
     # persisted; day 6-18 didn't need this level of detail, only whether
     # the scenario as a whole passed.
     evaluator_results: tuple[tuple[str, EvaluationResult], ...] = ()
+    # The agent role this scenario targets (day 20+) — known regardless
+    # of whether the scenario passed, crashed, or timed out, since
+    # scenario.role is available before any of those happen. The
+    # dashboard (day 20) groups pass rate by this field.
+    role: str = ""
 
 
 def collect_scenarios(paths: list[Path]) -> list[ScenarioSpec]:
@@ -95,6 +100,7 @@ def evaluate_scenario(scenario: ScenarioSpec, evaluators=DEFAULT_EVALUATORS, age
             passed=not failures,
             failures=tuple(failures),
             evaluator_results=tuple(evaluator_results),
+            role=scenario.role,
         )
     except AgentTimeoutError as e:
         return ScenarioOutcome(
@@ -102,6 +108,7 @@ def evaluate_scenario(scenario: ScenarioSpec, evaluators=DEFAULT_EVALUATORS, age
             passed=False,
             failures=(str(e),),
             timed_out=True,
+            role=scenario.role,
         )
     except Exception as e:
         return ScenarioOutcome(
@@ -109,6 +116,7 @@ def evaluate_scenario(scenario: ScenarioSpec, evaluators=DEFAULT_EVALUATORS, age
             passed=False,
             failures=(f"scenario crashed: {e!r}",),
             crashed=True,
+            role=scenario.role,
         )
 
 

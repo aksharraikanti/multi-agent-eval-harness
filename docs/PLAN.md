@@ -87,8 +87,11 @@ known ground truth before it's ever pointed at anything nondeterministic.
     the real judge yet**. No findings to document until that happens.
 19. **(done)** SQLite run-log schema (runs, scenarios, evaluator_results
     tables); write results from the runner into it.
-20. Minimal dashboard v1 (optional): a single static page reading the
-    SQLite file, showing pass-rate per agent.
+20. **(done)** Minimal dashboard v1 (optional): a single static page
+    reading the SQLite file, showing pass-rate per agent. Added a
+    `role` column to the `scenarios` table (not in the original day-19
+    schema) since grouping by agent needed it and the outcome objects
+    already had the value available for free.
 21. Dashboard v2 (optional): add latency/cost per hop (needs per-call
     token/time tracking added back around day 11-13).
 22. GitHub Actions CI: run the full scenario suite on every push, fail

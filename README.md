@@ -12,7 +12,7 @@ truth before it's ever pointed at anything nondeterministic.
 Built one small, working increment at a time. See [`docs/PLAN.md`](docs/PLAN.md)
 for the full day-by-day build log.
 
-## Status: Day 19 of 25 — SQLite run-log schema
+## Status: Day 20 of 25 — minimal dashboard v1
 
 Full day-by-day history (what shipped, why, and what it's for) lives in
 [`docs/PLAN.md`](docs/PLAN.md). Current capabilities:
@@ -59,8 +59,17 @@ Full day-by-day history (what shipped, why, and what it's for) lives in
   three-table schema (`runs`, `scenarios`, `evaluator_results`) and
   `write_run()` persists a whole suite run into it, down to individual
   evaluator verdicts per scenario — not just the aggregated pass/fail
-  `run_suite()` already gave you. This is what days 20-21's dashboard
-  will read from.
+  `run_suite()` already gave you.
+- **Dashboard** (`harness/dashboard.py`): `generate_dashboard(db_path,
+  output_path)` writes a single self-contained static HTML file — no
+  server, no build step, no client-side database library — showing
+  pass rate grouped by agent role, aggregated across every run recorded
+  in the SQLite log.
+
+```bash
+python -m harness.dashboard runs.db dashboard.html
+open dashboard.html
+```
 
 ```bash
 pip install -e ".[dev]"

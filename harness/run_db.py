@@ -9,7 +9,9 @@ Three tables:
 - runs: one row per `harness run` invocation.
 - scenarios: one row per scenario OUTCOME within a run — not a static
   scenario definition (ScenarioSpec already owns that); this is "how did
-  this scenario do, in this particular run."
+  this scenario do, in this particular run." Carries the agent role
+  (day 20+) so pass rate can be grouped by agent without a separate join
+  against the scenario YAML files.
 - evaluator_results: one row per individual evaluator's verdict for one
   scenario outcome, so a failure traces back to exactly which evaluator
   said what, instead of just an aggregated failure string.
@@ -34,6 +36,7 @@ CREATE TABLE IF NOT EXISTS scenarios (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     run_id TEXT NOT NULL REFERENCES runs(run_id),
     scenario_id TEXT NOT NULL,
+    role TEXT NOT NULL,
     passed INTEGER NOT NULL,
     crashed INTEGER NOT NULL,
     timed_out INTEGER NOT NULL
@@ -76,8 +79,16 @@ def write_run(conn: sqlite3.Connection, outcomes: list[ScenarioOutcome], run_id:
 
     for outcome in outcomes:
         cursor = conn.execute(
-            "INSERT INTO scenarios (run_id, scenario_id, passed, crashed, timed_out) VALUES (?, ?, ?, ?, ?)",
-            (run_id, outcome.scenario_id, int(outcome.passed), int(outcome.crashed), int(outcome.timed_out)),
+            """INSERT INTO scenarios (run_id, scenario_id, role, passed, crashed, timed_out)
+               VALUES (?, ?, ?, ?, ?, ?)""",
+            (
+                run_id,
+                outcome.scenario_id,
+                outcome.role,
+                int(outcome.passed),
+                int(outcome.crashed),
+                int(outcome.timed_out),
+            ),
         )
         scenario_row_id = cursor.lastrowid
 
