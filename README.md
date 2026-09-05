@@ -12,7 +12,7 @@ truth before it's ever pointed at anything nondeterministic.
 Built one small, working increment at a time. See [`docs/PLAN.md`](docs/PLAN.md)
 for the full day-by-day build log.
 
-## Status: Day 16 of 25 — LLM-judge scorer v1
+## Status: Day 17 of 25 — judge calibration (built, not yet run for real)
 
 Full day-by-day history (what shipped, why, and what it's for) lives in
 [`docs/PLAN.md`](docs/PLAN.md). Current capabilities:
@@ -39,6 +39,14 @@ Full day-by-day history (what shipped, why, and what it's for) lives in
 - **Reproducibility** (`harness/run_log.py`): record a run to JSON,
   replay it against evaluators later with no agent or network call
   involved.
+- **Judge calibration** (`harness/calibration.py`,
+  `harness/calibration_dataset.py`): a 12-example hand-labeled set and a
+  `calibrate()` function that reports the judge's agreement rate against
+  those labels. The calibration *math* is tested against a scripted fake
+  judge — **the real judge has not actually been calibrated yet**,
+  because that requires a live `ANTHROPIC_API_KEY` and a run of
+  `python -m harness.calibration` that nobody has done. Treat the judge
+  as unvalidated until that changes.
 
 ```bash
 pip install -e ".[dev]"
@@ -49,13 +57,14 @@ harness run
 pytest
 ```
 
-To run the LLM-judge tests against a real model (optional — the rest of
-the suite works without it):
+To run the LLM-judge against a real model, or run calibration for real
+(optional — the rest of the suite works without either):
 
 ```bash
 pip install -e ".[dev,llm-judge]"
 export ANTHROPIC_API_KEY=sk-...
 pytest tests/test_day16_llm_judge.py
+python -m harness.calibration
 ```
 
 ## Ground rules

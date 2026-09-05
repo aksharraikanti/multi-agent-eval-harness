@@ -65,9 +65,15 @@ known ground truth before it's ever pointed at anything nondeterministic.
     re-invoking the agent or tool server.
 16. **(done)** LLM-judge scorer v1: wire a real Claude/OpenAI call to
     grade one open-ended scenario against a rubric.
-17. Judge calibration: hand-label 10-15 scenario outputs, compare judge
-    scores against the labels, log the agreement rate. If agreement is
-    low, iterate on the rubric before moving on.
+17. **(done, partially)** Judge calibration: hand-label 10-15 scenario
+    outputs, compare judge scores against the labels, log the agreement
+    rate. If agreement is low, iterate on the rubric before moving on.
+    Built `harness/calibration.py` + a 12-example hand-labeled set
+    (`harness/calibration_dataset.py`) and verified the calibration math
+    itself against a scripted fake judge — but nobody has run
+    `python -m harness.calibration` against the real model yet (needs
+    `ANTHROPIC_API_KEY`). Treat the judge as **uncalibrated** until that
+    real run happens and clears the 80% threshold.
 18. Judge bias checks: test for position bias and verbosity bias,
     document findings.
 19. SQLite run-log schema (runs, scenarios, evaluator_results tables);
