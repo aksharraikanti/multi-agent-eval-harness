@@ -74,8 +74,17 @@ known ground truth before it's ever pointed at anything nondeterministic.
     `python -m harness.calibration` against the real model yet (needs
     `ANTHROPIC_API_KEY`). Treat the judge as **uncalibrated** until that
     real run happens and clears the 80% threshold.
-18. Judge bias checks: test for position bias and verbosity bias,
-    document findings.
+18. **(done, partially)** Judge bias checks: test for position bias and
+    verbosity bias, document findings. Built `harness/bias_checks.py`:
+    `check_verbosity_bias()` (paired short/verbose outputs, same
+    underlying correctness) and `check_order_independence()` (adapted
+    from classic position bias, since LLMJudgeEvaluator grades one
+    output per call with no pairwise comparison and no shared state —
+    what actually applies here is whether call order ever changes a
+    verdict, which it structurally shouldn't). Both checkers are proven
+    against fake judges — an honest one and two deliberately biased
+    ones — but **nobody has run `python -m harness.bias_checks` against
+    the real judge yet**. No findings to document until that happens.
 19. SQLite run-log schema (runs, scenarios, evaluator_results tables);
     write results from the runner into it.
 20. Minimal dashboard v1 (optional): a single static page reading the

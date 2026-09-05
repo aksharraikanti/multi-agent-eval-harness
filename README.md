@@ -12,7 +12,7 @@ truth before it's ever pointed at anything nondeterministic.
 Built one small, working increment at a time. See [`docs/PLAN.md`](docs/PLAN.md)
 for the full day-by-day build log.
 
-## Status: Day 17 of 25 — judge calibration (built, not yet run for real)
+## Status: Day 18 of 25 — judge bias checks (built, not yet run for real)
 
 Full day-by-day history (what shipped, why, and what it's for) lives in
 [`docs/PLAN.md`](docs/PLAN.md). Current capabilities:
@@ -47,6 +47,14 @@ Full day-by-day history (what shipped, why, and what it's for) lives in
   because that requires a live `ANTHROPIC_API_KEY` and a run of
   `python -m harness.calibration` that nobody has done. Treat the judge
   as unvalidated until that changes.
+- **Judge bias checks** (`harness/bias_checks.py`): `check_verbosity_bias()`
+  (paired short/verbose outputs of matched correctness — flags the judge
+  if it disagrees between them) and `check_order_independence()`, an
+  analog of position bias adapted for a single-verdict-per-call judge
+  with no pairwise comparison and no shared state. Both are proven
+  against fake judges (an honest one, and two deliberately biased ones)
+  — **the real judge has not been checked for either bias yet**. No
+  findings exist until `python -m harness.bias_checks` is run for real.
 
 ```bash
 pip install -e ".[dev]"
@@ -57,14 +65,16 @@ harness run
 pytest
 ```
 
-To run the LLM-judge against a real model, or run calibration for real
-(optional — the rest of the suite works without either):
+To run the LLM-judge against a real model, or run calibration/bias
+checks for real (optional — the rest of the suite works without any of
+this):
 
 ```bash
 pip install -e ".[dev,llm-judge]"
 export ANTHROPIC_API_KEY=sk-...
 pytest tests/test_day16_llm_judge.py
 python -m harness.calibration
+python -m harness.bias_checks
 ```
 
 ## Ground rules
