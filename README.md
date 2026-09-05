@@ -12,7 +12,7 @@ truth before it's ever pointed at anything nondeterministic.
 Built one small, working increment at a time. See [`docs/PLAN.md`](docs/PLAN.md)
 for the full day-by-day build log.
 
-## Status: Day 18 of 25 — judge bias checks (built, not yet run for real)
+## Status: Day 19 of 25 — SQLite run-log schema
 
 Full day-by-day history (what shipped, why, and what it's for) lives in
 [`docs/PLAN.md`](docs/PLAN.md). Current capabilities:
@@ -55,6 +55,12 @@ Full day-by-day history (what shipped, why, and what it's for) lives in
   against fake judges (an honest one, and two deliberately biased ones)
   — **the real judge has not been checked for either bias yet**. No
   findings exist until `python -m harness.bias_checks` is run for real.
+- **SQLite run-log** (`harness/run_db.py`): `connect()` creates a
+  three-table schema (`runs`, `scenarios`, `evaluator_results`) and
+  `write_run()` persists a whole suite run into it, down to individual
+  evaluator verdicts per scenario — not just the aggregated pass/fail
+  `run_suite()` already gave you. This is what days 20-21's dashboard
+  will read from.
 
 ```bash
 pip install -e ".[dev]"

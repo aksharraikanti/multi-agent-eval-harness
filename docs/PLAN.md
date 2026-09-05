@@ -85,8 +85,8 @@ known ground truth before it's ever pointed at anything nondeterministic.
     against fake judges — an honest one and two deliberately biased
     ones — but **nobody has run `python -m harness.bias_checks` against
     the real judge yet**. No findings to document until that happens.
-19. SQLite run-log schema (runs, scenarios, evaluator_results tables);
-    write results from the runner into it.
+19. **(done)** SQLite run-log schema (runs, scenarios, evaluator_results
+    tables); write results from the runner into it.
 20. Minimal dashboard v1 (optional): a single static page reading the
     SQLite file, showing pass-rate per agent.
 21. Dashboard v2 (optional): add latency/cost per hop (needs per-call

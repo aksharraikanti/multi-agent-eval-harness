@@ -15,11 +15,12 @@ clearly, not a bug in the harness itself.
 """
 
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from harness.agent_registry import get_agent
 from harness.evaluators import ContextLossEvaluator, OutputFormatEvaluator, ToolCallSequenceEvaluator
+from harness.evaluators.base import EvaluationResult
 from harness.mock_agent import AgentTimeoutError
 from harness.runner import SCENARIOS_DIR
 from harness.scenario_loader import load_scenario, load_scenarios
@@ -39,6 +40,12 @@ class ScenarioOutcome:
     failures: tuple[str, ...] = ()
     crashed: bool = False
     timed_out: bool = False
+    # One (evaluator class name, EvaluationResult) pair per evaluator that
+    # actually ran — empty on a crash or timeout, since no evaluator got
+    # the chance to run. Day 19's evaluator_results table is this field,
+    # persisted; day 6-18 didn't need this level of detail, only whether
+    # the scenario as a whole passed.
+    evaluator_results: tuple[tuple[str, EvaluationResult], ...] = ()
 
 
 def collect_scenarios(paths: list[Path]) -> list[ScenarioSpec]:
@@ -76,12 +83,19 @@ def evaluate_scenario(scenario: ScenarioSpec, evaluators=DEFAULT_EVALUATORS, age
         result = agent.run(scenario.input)
 
         failures = []
+        evaluator_results = []
         for evaluator in evaluators:
             outcome = evaluator.evaluate(scenario, result)
+            evaluator_results.append((type(evaluator).__name__, outcome))
             if not outcome.passed:
                 failures.append(outcome.reasoning)
 
-        return ScenarioOutcome(scenario.id, passed=not failures, failures=tuple(failures))
+        return ScenarioOutcome(
+            scenario.id,
+            passed=not failures,
+            failures=tuple(failures),
+            evaluator_results=tuple(evaluator_results),
+        )
     except AgentTimeoutError as e:
         return ScenarioOutcome(
             scenario.id,
