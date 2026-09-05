@@ -7,6 +7,7 @@ never flake.
 """
 
 import json
+import time
 import urllib.request
 from dataclasses import dataclass, field
 
@@ -21,6 +22,14 @@ class AgentResult:
     # detector diffs this observed value against the scenario's
     # context_passed (what should have been handed off).
     handoff_context: dict | None = None
+
+    # Wall-clock time the agent took to produce this result, in
+    # milliseconds (day 21+). None for agents that don't do real work
+    # worth timing (CannedAgent and its wrappers execute instantly) —
+    # only HttpAgent measures this, since it's the only agent making an
+    # actual network call. A fabricated number for an instant dict
+    # lookup would be more misleading than no number at all.
+    latency_ms: float | None = None
 
 
 class CannedAgent:
@@ -64,6 +73,7 @@ class DropsToolCallAgent(CannedAgent):
             tool_calls=filtered_calls,
             output=result.output,
             handoff_context=result.handoff_context,
+            latency_ms=result.latency_ms,
         )
 
 
@@ -88,6 +98,7 @@ class HallucinatesToolCallAgent(CannedAgent):
             tool_calls=[*result.tool_calls, self._hallucinate],
             output=result.output,
             handoff_context=result.handoff_context,
+            latency_ms=result.latency_ms,
         )
 
 
@@ -115,6 +126,7 @@ class DropsContextKeyAgent(CannedAgent):
             tool_calls=result.tool_calls,
             output=result.output,
             handoff_context=filtered_context,
+            latency_ms=result.latency_ms,
         )
 
 
@@ -143,6 +155,7 @@ class HallucinatesContextKeyAgent(CannedAgent):
             tool_calls=result.tool_calls,
             output=result.output,
             handoff_context=context,
+            latency_ms=result.latency_ms,
         )
 
 
@@ -218,7 +231,9 @@ class HttpAgent:
         tool_call_name, method, path = self._script[input_text]
 
         request = urllib.request.Request(self._base_url + path, method=method)
+        start = time.perf_counter()
         with urllib.request.urlopen(request) as response:
             body = json.loads(response.read())
+        latency_ms = (time.perf_counter() - start) * 1000
 
-        return AgentResult(tool_calls=[tool_call_name], output=json.dumps(body))
+        return AgentResult(tool_calls=[tool_call_name], output=json.dumps(body), latency_ms=latency_ms)

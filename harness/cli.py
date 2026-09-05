@@ -51,6 +51,10 @@ class ScenarioOutcome:
     # scenario.role is available before any of those happen. The
     # dashboard (day 20) groups pass rate by this field.
     role: str = ""
+    # Wall-clock latency of the agent's run() call, in milliseconds
+    # (day 21+). None unless the agent itself measured it (HttpAgent
+    # does; CannedAgent and its wrappers execute instantly and don't).
+    latency_ms: float | None = None
 
 
 def collect_scenarios(paths: list[Path]) -> list[ScenarioSpec]:
@@ -101,6 +105,7 @@ def evaluate_scenario(scenario: ScenarioSpec, evaluators=DEFAULT_EVALUATORS, age
             failures=tuple(failures),
             evaluator_results=tuple(evaluator_results),
             role=scenario.role,
+            latency_ms=result.latency_ms,
         )
     except AgentTimeoutError as e:
         return ScenarioOutcome(

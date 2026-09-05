@@ -68,7 +68,12 @@ def test_dashboard_handles_an_empty_database_without_crashing(tmp_path):
 def test_role_names_are_html_escaped():
     from harness.dashboard import _render_html
 
-    html_out = _render_html([("<script>alert(1)</script>", 1, 1)], run_count=1)
+    html_out = _render_html(
+        [("<script>alert(1)</script>", 1, 1, None)],
+        run_count=1,
+        total_cost=None,
+        judged_call_count=0,
+    )
 
     assert "<script>alert(1)</script>" not in html_out
     assert "&lt;script&gt;" in html_out

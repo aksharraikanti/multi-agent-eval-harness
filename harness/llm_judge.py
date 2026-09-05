@@ -22,7 +22,18 @@ from harness.evaluators.base import EvaluationResult
 from harness.mock_agent import AgentResult
 from harness.schema import ScenarioSpec
 
-JUDGE_MODEL = "claude-3-5-haiku-latest"  # cheap and fast — plenty for a rubric-grading task
+# claude-haiku-4-5 — cheap and fast, plenty for a rubric-grading task.
+# Was claude-3-5-haiku-latest until day 21: that model id doesn't appear
+# in current Anthropic pricing at all and looks retired. Checked via the
+# claude-api skill rather than trusting a stale training-data model name.
+JUDGE_MODEL = "claude-haiku-4-5"
+
+# $/million tokens, Claude Haiku 4.5, confirmed via the claude-api skill
+# on 2026-09-01 (cached pricing table dated 2026-06-24). Verify against
+# Anthropic's published pricing before trusting cost figures long after
+# that date — prices change and this constant won't update itself.
+JUDGE_INPUT_COST_PER_MILLION = 1.00
+JUDGE_OUTPUT_COST_PER_MILLION = 5.00
 
 JUDGE_SYSTEM_PROMPT = (
     "You are grading whether an AI agent's response satisfies a rubric. "
@@ -78,5 +89,11 @@ class LLMJudgeEvaluator:
             messages=[{"role": "user", "content": prompt}],
         )
         verdict = response.content[0].text.strip()
+        cost_usd = self._compute_cost(response.usage)
 
-        return EvaluationResult(passed=verdict.upper().startswith("PASS"), reasoning=verdict)
+        return EvaluationResult(passed=verdict.upper().startswith("PASS"), reasoning=verdict, cost_usd=cost_usd)
+
+    def _compute_cost(self, usage) -> float:
+        input_cost = usage.input_tokens * JUDGE_INPUT_COST_PER_MILLION / 1_000_000
+        output_cost = usage.output_tokens * JUDGE_OUTPUT_COST_PER_MILLION / 1_000_000
+        return input_cost + output_cost

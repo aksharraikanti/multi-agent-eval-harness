@@ -92,8 +92,16 @@ known ground truth before it's ever pointed at anything nondeterministic.
     `role` column to the `scenarios` table (not in the original day-19
     schema) since grouping by agent needed it and the outcome objects
     already had the value available for free.
-21. Dashboard v2 (optional): add latency/cost per hop (needs per-call
-    token/time tracking added back around day 11-13).
+21. **(done)** Dashboard v2 (optional): add latency/cost per hop (needs
+    per-call token/time tracking added back around day 11-13). Added
+    `AgentResult.latency_ms` (real wall-clock time, measured only by
+    `HttpAgent` — never fabricated for instant mock agents) and
+    `EvaluationResult.cost_usd` (real token-based cost, computed only
+    by `LLMJudgeEvaluator` from the API's actual `usage` field).
+    **Side finding while pricing this:** `claude-3-5-haiku-latest`
+    (used since day 16) isn't in Anthropic's current pricing at all —
+    looks retired. Fixed to `claude-haiku-4-5` ($1/$5 per 1M tokens,
+    confirmed via the claude-api skill rather than trusted from memory).
 22. GitHub Actions CI: run the full scenario suite on every push, fail
     the build on a regression.
 23. Regression gate policy: rule-based evaluators are CI-blocking; the

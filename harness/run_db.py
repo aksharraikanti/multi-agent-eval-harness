@@ -14,7 +14,12 @@ Three tables:
   against the scenario YAML files.
 - evaluator_results: one row per individual evaluator's verdict for one
   scenario outcome, so a failure traces back to exactly which evaluator
-  said what, instead of just an aggregated failure string.
+  said what, instead of just an aggregated failure string. Carries
+  cost_usd (day 21+) for evaluators that make a paid API call — None
+  for rule-based evaluators, which don't cost anything.
+
+scenarios.latency_ms (day 21+) is the agent's wall-clock run() time,
+when the agent measured one (only HttpAgent does — see mock_agent.py).
 """
 
 import sqlite3
@@ -39,7 +44,8 @@ CREATE TABLE IF NOT EXISTS scenarios (
     role TEXT NOT NULL,
     passed INTEGER NOT NULL,
     crashed INTEGER NOT NULL,
-    timed_out INTEGER NOT NULL
+    timed_out INTEGER NOT NULL,
+    latency_ms REAL
 );
 
 CREATE TABLE IF NOT EXISTS evaluator_results (
@@ -47,7 +53,8 @@ CREATE TABLE IF NOT EXISTS evaluator_results (
     scenario_row_id INTEGER NOT NULL REFERENCES scenarios(id),
     evaluator_name TEXT NOT NULL,
     passed INTEGER NOT NULL,
-    reasoning TEXT NOT NULL
+    reasoning TEXT NOT NULL,
+    cost_usd REAL
 );
 """
 
@@ -79,8 +86,8 @@ def write_run(conn: sqlite3.Connection, outcomes: list[ScenarioOutcome], run_id:
 
     for outcome in outcomes:
         cursor = conn.execute(
-            """INSERT INTO scenarios (run_id, scenario_id, role, passed, crashed, timed_out)
-               VALUES (?, ?, ?, ?, ?, ?)""",
+            """INSERT INTO scenarios (run_id, scenario_id, role, passed, crashed, timed_out, latency_ms)
+               VALUES (?, ?, ?, ?, ?, ?, ?)""",
             (
                 run_id,
                 outcome.scenario_id,
@@ -88,6 +95,7 @@ def write_run(conn: sqlite3.Connection, outcomes: list[ScenarioOutcome], run_id:
                 int(outcome.passed),
                 int(outcome.crashed),
                 int(outcome.timed_out),
+                outcome.latency_ms,
             ),
         )
         scenario_row_id = cursor.lastrowid
@@ -95,9 +103,9 @@ def write_run(conn: sqlite3.Connection, outcomes: list[ScenarioOutcome], run_id:
         for evaluator_name, evaluation in outcome.evaluator_results:
             conn.execute(
                 """INSERT INTO evaluator_results
-                   (scenario_row_id, evaluator_name, passed, reasoning)
-                   VALUES (?, ?, ?, ?)""",
-                (scenario_row_id, evaluator_name, int(evaluation.passed), evaluation.reasoning),
+                   (scenario_row_id, evaluator_name, passed, reasoning, cost_usd)
+                   VALUES (?, ?, ?, ?, ?)""",
+                (scenario_row_id, evaluator_name, int(evaluation.passed), evaluation.reasoning, evaluation.cost_usd),
             )
 
     conn.commit()

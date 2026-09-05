@@ -26,13 +26,20 @@ RUBRIC_SCENARIO = ScenarioSpec(
 
 
 class FakeMessage:
-    def __init__(self, text: str):
+    def __init__(self, text: str, input_tokens: int = 50, output_tokens: int = 10):
         self.content = [FakeTextBlock(text)]
+        self.usage = FakeUsage(input_tokens, output_tokens)
 
 
 class FakeTextBlock:
     def __init__(self, text: str):
         self.text = text
+
+
+class FakeUsage:
+    def __init__(self, input_tokens: int, output_tokens: int):
+        self.input_tokens = input_tokens
+        self.output_tokens = output_tokens
 
 
 class FakeMessagesAPI:

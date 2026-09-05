@@ -12,7 +12,7 @@ truth before it's ever pointed at anything nondeterministic.
 Built one small, working increment at a time. See [`docs/PLAN.md`](docs/PLAN.md)
 for the full day-by-day build log.
 
-## Status: Day 20 of 25 — minimal dashboard v1
+## Status: Day 21 of 25 — dashboard v2 (latency + judge cost)
 
 Full day-by-day history (what shipped, why, and what it's for) lives in
 [`docs/PLAN.md`](docs/PLAN.md). Current capabilities:
@@ -62,9 +62,21 @@ Full day-by-day history (what shipped, why, and what it's for) lives in
   `run_suite()` already gave you.
 - **Dashboard** (`harness/dashboard.py`): `generate_dashboard(db_path,
   output_path)` writes a single self-contained static HTML file — no
-  server, no build step, no client-side database library — showing
-  pass rate grouped by agent role, aggregated across every run recorded
-  in the SQLite log.
+  server, no build step, no client-side database library — showing pass
+  rate, average latency, and total judge cost, grouped by agent role and
+  aggregated across every run recorded in the SQLite log. Latency
+  (`AgentResult.latency_ms`) is only ever measured by `HttpAgent`'s real
+  wall-clock timing, never fabricated for an instant mock agent; judge
+  cost (`EvaluationResult.cost_usd`) is computed from the real
+  `usage.input_tokens`/`output_tokens` on an actual API response. Both
+  render as `n/a` / "no cost recorded yet" rather than a made-up number
+  when the data doesn't exist — which, honestly, it mostly doesn't yet
+  in this project's own database.
+  - **Found and fixed while pricing this:** the judge's model id
+    (`claude-3-5-haiku-latest`, set on day 16) isn't in Anthropic's
+    current pricing table at all — it looks retired. Now
+    `claude-haiku-4-5` ($1.00 / $5.00 per 1M input/output tokens),
+    checked via the claude-api skill rather than trusted from memory.
 
 ```bash
 python -m harness.dashboard runs.db dashboard.html
