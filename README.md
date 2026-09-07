@@ -24,9 +24,9 @@ harness run      # runs the real scenario suite against the mock agents
 pytest           # runs the full test suite
 ```
 
-## Status: Day 24 of 25 — README polish
+## Status: Day 25 of 25 — complete
 
-Everything below is what's implemented today. Full day-by-day history is in
+Everything below is what's implemented. Full day-by-day history is in
 [`docs/PLAN.md`](docs/PLAN.md).
 
 | Piece | What it does |
@@ -41,6 +41,7 @@ Everything below is what's implemented today. Full day-by-day history is in
 | **Judge calibration + bias checks** (`harness/calibration.py`, `harness/bias_checks.py`) | A 12-example hand-labeled set and agreement-rate scoring; verbosity-bias and order-independence checks. The checking *machinery* is fully tested against fake judges — **the real judge has not been calibrated or bias-checked against a live model yet.** Run `python -m harness.calibration` / `python -m harness.bias_checks` yourself to get real findings. |
 | **Regression gate policy** (`harness/advisory.py`) | Rule-based evaluators are CI-blocking; the judge is advisory-only, permanently — locked in by a test, not just a comment. `python -m harness.advisory` reads the judge's opinions without ever touching the exit code. |
 | **CI** (`.github/workflows/ci.yml`) | Every push/PR: install, `pytest`, `harness run`, on Python 3.11 and 3.12. No secrets required. |
+| **Live agent** (`harness/live_agent.py`) | `LiveClaudeAgent` runs a real one-tool tool-use loop against a real `MockToolServer` — a real model decides whether to call the tool and how to phrase the answer. The harness's only genuinely nondeterministic agent; proves the same evaluators work against varying, not just canned, output (loose checks — `subset` mode, a regex — are what make that possible). Never wired into the default suite; gated the same way as the judge. |
 
 ## Working with the LLM-judge
 
@@ -51,10 +52,11 @@ exercise the judge itself, or run calibration/bias checks for real:
 pip install -e ".[dev,llm-judge]"
 export ANTHROPIC_API_KEY=sk-...
 
-pytest tests/test_day16_llm_judge.py   # the judge's own test, live
-python -m harness.calibration          # agreement rate vs. hand labels
-python -m harness.bias_checks          # verbosity + order-independence
-python -m harness.advisory             # read judge opinions (never blocks)
+pytest tests/test_day16_llm_judge.py    # the judge's own test, live
+pytest tests/test_day25_live_agent.py   # the live agent's own test, live
+python -m harness.calibration           # agreement rate vs. hand labels
+python -m harness.bias_checks           # verbosity + order-independence
+python -m harness.advisory              # read judge opinions (never blocks)
 ```
 
 To view the dashboard after a run:

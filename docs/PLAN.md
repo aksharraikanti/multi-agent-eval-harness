@@ -119,9 +119,25 @@ known ground truth before it's ever pointed at anything nondeterministic.
     grounded in things that actually happened (the `poll_interval` fix,
     the stale model id, the wrapper-agent bug repeating twice, the
     GitHub Actions workflow-scope surprise), not generic takeaways.
-25. Stretch: swap one mock agent for a real Claude API call behind a
-    flag, to prove the harness also works against something
-    nondeterministic.
+25. **(done)** Stretch: swap one mock agent for a real Claude API call
+    behind a flag, to prove the harness also works against something
+    nondeterministic. `LiveClaudeAgent` (`harness/live_agent.py`) runs a
+    real one-tool tool-use loop against a real `MockToolServer` — the
+    model itself decides whether to call the tool and how to phrase the
+    answer. The "flag" is `live_agent_is_available()` (mirrors day 16's
+    judge gate): the mechanics are proven with a fake client; the one
+    real-call test skips cleanly without `ANTHROPIC_API_KEY`, and
+    `harness run`'s default suite never touches it. Also demonstrates
+    directly why loose checks (`subset` mode, a regex, not exact string
+    equality) matter: they're what let an evaluator pass correct but
+    differently-worded nondeterministic output.
+
+All 25 days done. `harness run`, `pytest`, and CI stay fully green with
+zero secrets required throughout; the LLM-judge, calibration, bias
+checks, and this live agent are all real, tested, and explicitly
+unverified against a live model — that gap is documented everywhere it
+matters (README, this file, the modules' own docstrings) rather than
+implied away.
 
 ## Landscape notes (2026)
 

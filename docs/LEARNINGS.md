@@ -114,3 +114,17 @@ accident waiting for day 30. Day 23 turned it into a test
 (`harness/advisory.py`) whose `main()` function has no code path that
 reads a verdict before returning 0. The difference between "true today"
 and "structurally can't become false" is worth the extra hour.
+
+## Live agent (`harness/live_agent.py`)
+
+Every mock agent before this one was deterministic on purpose, which
+made them easy to test but meant no evaluator had ever been proven
+against output that *varies*. Writing `LiveClaudeAgent`'s test against
+a real model made one thing obvious in a way a design doc never would:
+you cannot assert exact string equality on anything the model says, so
+every check that matters here has to be loose by construction — subset
+mode instead of exact, a regex instead of an exact match. Those loose
+modes existed since days 4 and 5 for other reasons (order flexibility,
+partial output), but this is the day it became clear they weren't just
+convenience options — they're the only way an evaluator can survive
+contact with something nondeterministic at all.
