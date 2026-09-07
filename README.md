@@ -1,5 +1,7 @@
 # multi-agent-eval-harness
 
+[![CI](https://github.com/aksharraikanti/multi-agent-eval-harness/actions/workflows/ci.yml/badge.svg)](https://github.com/aksharraikanti/multi-agent-eval-harness/actions/workflows/ci.yml)
+
 A multi-agent LLM eval harness, built from scratch as a learning project.
 
 Most public eval-framework write-ups stop at single-agent tool-call accuracy.
@@ -12,7 +14,7 @@ truth before it's ever pointed at anything nondeterministic.
 Built one small, working increment at a time. See [`docs/PLAN.md`](docs/PLAN.md)
 for the full day-by-day build log.
 
-## Status: Day 21 of 25 — dashboard v2 (latency + judge cost)
+## Status: Day 22 of 25 — GitHub Actions CI
 
 Full day-by-day history (what shipped, why, and what it's for) lives in
 [`docs/PLAN.md`](docs/PLAN.md). Current capabilities:
@@ -77,6 +79,10 @@ Full day-by-day history (what shipped, why, and what it's for) lives in
     current pricing table at all — it looks retired. Now
     `claude-haiku-4-5` ($1.00 / $5.00 per 1M input/output tokens),
     checked via the claude-api skill rather than trusted from memory.
+- **CI** (`.github/workflows/ci.yml`): every push and PR installs the
+  project (Python 3.11 and 3.12), runs the full pytest suite, and runs
+  `harness run` against the real scenarios — no secrets required, since
+  the LLM-judge's live-call test already skips cleanly without one.
 
 ```bash
 python -m harness.dashboard runs.db dashboard.html

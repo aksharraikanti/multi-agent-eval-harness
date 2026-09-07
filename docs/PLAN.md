@@ -102,8 +102,8 @@ known ground truth before it's ever pointed at anything nondeterministic.
     (used since day 16) isn't in Anthropic's current pricing at all —
     looks retired. Fixed to `claude-haiku-4-5` ($1/$5 per 1M tokens,
     confirmed via the claude-api skill rather than trusted from memory).
-22. GitHub Actions CI: run the full scenario suite on every push, fail
-    the build on a regression.
+22. **(done)** GitHub Actions CI: run the full scenario suite on every
+    push, fail the build on a regression.
 23. Regression gate policy: rule-based evaluators are CI-blocking; the
     LLM-judge stays advisory-only, permanently.
 24. README polish + a short "what I learned" note per major module.
