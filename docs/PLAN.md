@@ -112,7 +112,13 @@ known ground truth before it's ever pointed at anything nondeterministic.
     `LLMJudgeEvaluator`) and `harness/advisory.py`, where the judge's
     opinion actually gets read — `advisory_main()` always returns 0, no
     matter the verdict, because nothing in that path reads outcomes.
-24. README polish + a short "what I learned" note per major module.
+24. **(done)** README polish + a short "what I learned" note per major
+    module. README restructured around a quickstart + a table instead
+    of a growing bullet list (the second time it needed this — see day
+    16); `docs/LEARNINGS.md` holds one concrete, dated note per module,
+    grounded in things that actually happened (the `poll_interval` fix,
+    the stale model id, the wrapper-agent bug repeating twice, the
+    GitHub Actions workflow-scope surprise), not generic takeaways.
 25. Stretch: swap one mock agent for a real Claude API call behind a
     flag, to prove the harness also works against something
     nondeterministic.
