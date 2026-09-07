@@ -104,8 +104,14 @@ known ground truth before it's ever pointed at anything nondeterministic.
     confirmed via the claude-api skill rather than trusted from memory).
 22. **(done)** GitHub Actions CI: run the full scenario suite on every
     push, fail the build on a regression.
-23. Regression gate policy: rule-based evaluators are CI-blocking; the
-    LLM-judge stays advisory-only, permanently.
+23. **(done)** Regression gate policy: rule-based evaluators are
+    CI-blocking; the LLM-judge stays advisory-only, permanently. This
+    was already structurally true (`DEFAULT_EVALUATORS` never included
+    the judge), so the work was making it explicit: a locked-in
+    regression test (`DEFAULT_EVALUATORS` contains no
+    `LLMJudgeEvaluator`) and `harness/advisory.py`, where the judge's
+    opinion actually gets read — `advisory_main()` always returns 0, no
+    matter the verdict, because nothing in that path reads outcomes.
 24. README polish + a short "what I learned" note per major module.
 25. Stretch: swap one mock agent for a real Claude API call behind a
     flag, to prove the harness also works against something

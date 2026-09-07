@@ -14,7 +14,7 @@ truth before it's ever pointed at anything nondeterministic.
 Built one small, working increment at a time. See [`docs/PLAN.md`](docs/PLAN.md)
 for the full day-by-day build log.
 
-## Status: Day 22 of 25 — GitHub Actions CI
+## Status: Day 23 of 25 — regression gate policy
 
 Full day-by-day history (what shipped, why, and what it's for) lives in
 [`docs/PLAN.md`](docs/PLAN.md). Current capabilities:
@@ -83,6 +83,19 @@ Full day-by-day history (what shipped, why, and what it's for) lives in
   project (Python 3.11 and 3.12), runs the full pytest suite, and runs
   `harness run` against the real scenarios — no secrets required, since
   the LLM-judge's live-call test already skips cleanly without one.
+- **Regression gate policy** (`harness/advisory.py`): rule-based
+  evaluators are CI-blocking (`harness/cli.py`'s `DEFAULT_EVALUATORS`,
+  locked in by a test asserting no `LLMJudgeEvaluator` is ever in that
+  tuple); the LLM-judge is advisory-only, permanently — calibration
+  makes it trustworthy to *read*, not safe to *gate on*.
+  `run_advisory_judge()` runs the judge across a suite and
+  `print_advisory_report()` shows its opinions, but `advisory_main()`
+  always returns 0 — nothing in that path ever looks at the verdict.
+
+```bash
+python -m harness.advisory   # requires ANTHROPIC_API_KEY — reads the judge's
+                              # opinions, never affects your shell's exit code
+```
 
 ```bash
 python -m harness.dashboard runs.db dashboard.html
